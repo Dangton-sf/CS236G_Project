@@ -1,0 +1,174 @@
+RUNSPEC   == memory dimensioning of the run =============================
+
+TITLE     -- title of the run
+PHASE 4: MODEL b: 2D, HETEROGENEOUS, VERTICAL OIL-WATER SYSTEM
+
+DIMENS    -- dimensions of the model
+-- NX    NY   NZ
+   30    30    1 / --2D Model XY Section
+
+OIL       -- two phase black oil
+WATER     -- water is present, but no gas
+FIELD     -- unit specification
+START     -- starting date for simulation run
+  8 'JAN' 2015 /
+
+EQLDIMS   -- equilibration table size
+    1  100   10    1   20 /
+TABDIMS   -- size of saturation and pvt tables
+    1    1   40   40 /
+WELLDIMS  -- max numb of WELLS/CONN per WELL/GROUPS/WELLperGROUP
+    4    20    1    4 /
+START     -- starting time for simulation run
+    8 'JAN' 2015  /
+NSTACK    -- usually 10
+    10 /
+
+GRID      == geometry of our model =====================================
+EQUALS    -- set top depth, block sizes and rock properties
+          -- valid for a given range of blocks: I1 I2   J1 J2   K1 K2
+      'DX'     110   /                        -- default box => all blocks
+      'DY'     110   /
+      'TOPS'	6000 /
+      'DZ'     110  / -- thickness of the layers
+/
+INCLUDE
+'.\PERMX-2.INC'
+/
+
+/
+INCLUDE
+'.\PERMZ-2.INC'
+/
+
+/
+INCLUDE
+'.\PORO-2.INC'
+/
+
+
+COPY
+PERMX PERMY/
+/
+
+BOX
+1 30 1 1 1 1/
+
+
+ENDBOX
+
+
+-- request init and grid file, necessary for post processing of the simulation with floviz
+INIT
+GRIDFILE
+ 2 /
+
+PROPS     == pvt and relperm tables =============================
+
+PVTW
+-- Pref | wat FVF @Pref | wat compres | visco@Pref | viscosibility @Pref
+   14.7       1.0          5.0E-7           1.0            0.0 /
+
+PVCDO      -- pvt for dead oil with constant compressibility
+-- Pref | oil FVF @Pref | oil compres | visco@Pref | viscosibility @Pref
+   14.7       1            1.2e-5         5             2e-6 /
+
+INCLUDE
+'.\KR.INC'
+/
+
+ROCK       -- reference Pressure and rock compressibility
+        14.7    0E-6
+/
+
+DENSITY   -- oil wat gas @surface(lbm/scf)
+        40.0  62.238  0.0647
+/
+
+SOLUTION   == initial state of solution variables =====================
+EQUIL      -- DATA FOR INITIALISING FLUIDS TO POTENTIAL EQUILIBRIUM
+--    DATUM  DATUM   OWC    OWC    GOC    GOC    RSVD   RVVD   SOLN
+--    DEPTH  PRESS  DEPTH   PCOW  DEPTH   PCOG  TABLE  TABLE   METH
+       6000  3500   20000    0    2000    0      1      0       0
+/
+
+
+RPTSOL
+'RESTART=2' /
+
+SUMMARY    == output written to summary *.RSM file ====================
+RUNSUM     -- additional table in *.PRT file
+SEPARATE   -- write a seperate *.RSM file
+WOPR       -- 'W'ell 'O'il 'P'roduction 'R'ate
+'PROD1'
+'PROD2'
+/
+
+WWCT	   -- 'W'ell 'W'ater 'C'ut
+'PROD1'
+'PROD2'
+/
+WWPR       -- 'W'ell 'W'ater 'P'roduction 'R'ate
+'PROD1'
+'PROD2'
+'INJ1'
+/
+
+WWIR	   -- 'W'ell 'W'ater 'I'njection 'R'ate
+'INJ1'
+/
+
+
+WBHP       -- and the bottom hole pressure of 'PROD'
+'PROD1'
+'PROD2'
+ 'INJ1'
+/
+
+
+FPR        -- Average reservoir pressure
+FOPT       -- Cumulative oil production of the field, ('F'ield 'O'il 'P'roduction 'T'otal)
+FWIT       -- Cumulative oil production of the field, ('F'ield 'O'il 'P'roduction 'T'otal)
+FWPT       -- Cumulative water production of the field, ('F'ield 'O'il 'P'roduction 'T'otal)
+FOE        -- request oil recovery
+FOPV        -- field oil pore volume
+FWPV        -- field water pore volume
+FWCT
+
+
+BPR        -- request pressure output for specified blocks for each time step
+ 10  10 1 / --              Producer1, one perforation
+ 10  5 1 / --              Producer2, one perforation
+/
+
+BOSAT
+ 5  10 1 / --              Injector1, one perforation
+ 10  10 1 / --              Producer1, one perforation
+ 10  5 1 / --              Producer2, one perforation
+/
+
+SCHEDULE   == operations to be simulated ==============================
+RPTSCHED   -- CONTROLS ON OUTPUT AT EACH REPORT TIME
+  'WELLS=4' 'WELSPECS'
+/
+
+DRSDT     -- Free gas is not allowed to re-dissolve within oil
+  0 /
+
+RPTRST    -- request restart file
+'BASIC=2'
+/
+
+TUNING  -- min/max timestep (3 sections)
+1 1  /
+5*  0.1 /
+2* 100 /
+
+
+/
+INCLUDE
+'.\opers1.INC'
+/
+
+
+END     ================================================================
