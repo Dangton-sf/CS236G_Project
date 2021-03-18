@@ -24,7 +24,7 @@ To train the model, make the neccessary parameters change to parameter box in th
 input_file = 'Producer_start_center_hetrogenous.csv'
 batch_size = 50
 lambda_gp = 4
-lambda_l1 = 1
+lambda_l2 = 1
 nb_epoch = int(1e6)
 dis_iters = 4
 gen_iters = 1
