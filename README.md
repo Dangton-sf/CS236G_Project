@@ -37,6 +37,7 @@ test_size = 0.5
 ```
 
 To run evaluation on a trained generator, run the eval_gene(gene) function where gene is the trained generator. It will generate all 900 possible well placement cases.
+
 A trained generator and discriminator on the Producer_start_center_hetrogenous dataset is provided. To generate the data from the provided generator, simply run Eval_center_hetrogenous.py.
 
 ## Authors
